@@ -1,5 +1,4 @@
-
-----怕和其他函数冲突所有函数加入前缀“Zhu” 
+----怕和其他函数冲突所有函数加入前缀“Zhu”
 
 --- 将 Set Table 数值类型 转成 JSON 字符串 打印 方便调试 BUFF 信息
 function ZhuLocalTabelToJSON(t)
@@ -129,6 +128,14 @@ function ZhuGetEnhancementShamanWindfuryWeaponStack()
   local info = ZhuGetSpellInfoByID(spellId)
   local value = info and info.applications or 0
   local max = 10
+  return value, max
+end
+
+function ZhuGetMonkPanFuryStack()
+  local max = 240;
+  local value = 0;
+  local info = ZhuGetSpellInfoByID(470670);
+  value = (info and info.points and info.points[1]) or 0
   return value, max
 end
 
