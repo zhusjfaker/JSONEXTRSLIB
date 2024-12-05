@@ -225,6 +225,8 @@ function ZhuZhuMonkLunHuiChoice()
     playerHealth = UnitHealthMax("player")
   end
 
- return playerHealth >= currentHealth
+  local b = not UnitIsFriend("player", "target");
+
+ return b and playerHealth >= currentHealth
 
 end
