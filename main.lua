@@ -212,3 +212,19 @@ function ZhuGetBuffTooltipBySpellID(spellID)
   -- 如果没有找到指定的 BUFF
   return nil
 end
+
+function ZhuZhuMonkLunHuiChoice()
+  local currentHealth = 0 -- 默认值为 0
+  -- 检查目标是否存在且存活
+  if UnitExists("target") and not UnitIsDead("target") then
+    currentHealth = UnitHealth("target")
+  end
+
+  local playerHealth = 0
+  if UnitExists("player") and not UnitIsDead("player") then
+    playerHealth = UnitHealthMax("player")
+  end
+
+ return playerHealth >= currentHealth
+
+end
