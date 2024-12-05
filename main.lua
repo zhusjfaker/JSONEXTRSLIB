@@ -227,6 +227,6 @@ function ZhuZhuMonkLunHuiChoice()
 
   local b = not UnitIsFriend("player", "target");
 
- return b and playerHealth >= currentHealth
+ return b and playerHealth >= currentHealth and UnitAffectingCombat("player")
 
 end
