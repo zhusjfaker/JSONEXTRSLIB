@@ -227,6 +227,92 @@ function ZhuZhuMonkLunHuiChoice()
 
   local b = not UnitIsFriend("player", "target");
 
- return b and playerHealth >= currentHealth and UnitAffectingCombat("player")
+  return b and playerHealth >= currentHealth and UnitAffectingCombat("player")
+end
 
+function ZhuZhuPingAssist()
+  C_Ping.SendMacroPing(Enum.PingSubjectType.Assist, "none");
+end
+
+function ZhuZhuBuffCount(spellId)
+  local count = 0
+  for i = 1, 40 do
+    local info = C_UnitAuras.GetBuffDataByIndex("player", i, "HELPFUL")
+    if info and info.spellId == spellId then
+      count = count + 1
+    end
+  end
+  return count
+end
+
+function ZhuZhuTalantInfoPrint()
+  local configID = C_ClassTalents.GetActiveConfigID()
+  if not configID then
+    print("当前没有激活的天赋配置。")
+    return false
+  end
+
+  local ConfigInfo = C_Traits.GetConfigInfo(configID)
+  local treeID = ConfigInfo.treeIDs[1]
+  local nodeIDs = C_Traits.GetTreeNodes(treeID)
+
+  for k, v in pairs(nodeIDs) do
+    local nodeInfo = C_Traits.GetNodeInfo(configID, v)
+    if nodeInfo then
+      if nodeInfo.entryIDs[1] then
+        for m, n in pairs(nodeInfo.entryIDsWithCommittedRanks) do
+          local entryInfo = C_Traits.GetEntryInfo(configID, n)
+          if entryInfo and entryInfo.definitionID then
+            local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+            if definitionInfo then
+              local spellInfo = C_Spell.GetSpellInfo(definitionInfo.spellID);
+              print("spellID---->", definitionInfo.spellID, "name----->", spellInfo.name);
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+function ZhuZhuTalantActive(spellId)
+  local cache = nil -- 用于存储计算结果
+  -- 返回一个接口函数，判断是否已缓存结果，若缓存则直接返回，若未缓存则执行计算
+  return function(spellIDToFind)
+    -- 如果缓存中有结果，直接返回
+    if cache ~= nil then
+      return cache
+    end
+
+    -- 否则执行计算并缓存结果
+    local configID = C_ClassTalents.GetActiveConfigID()
+    if not configID then
+      cache = false -- 没有激活的天赋配置，缓存为 false
+      return false
+    end
+
+    local configInfo = C_Traits.GetConfigInfo(configID)
+    local treeID = configInfo.treeIDs[1]
+    local nodeIDs = C_Traits.GetTreeNodes(treeID)
+
+    for _, nodeID in pairs(nodeIDs) do
+      local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+      if nodeInfo and nodeInfo.entryIDs[1] then
+        for _, entryID in pairs(nodeInfo.entryIDsWithCommittedRanks) do
+          local entryInfo = C_Traits.GetEntryInfo(configID, entryID)
+          if entryInfo and entryInfo.definitionID then
+            local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+            if definitionInfo and definitionInfo.spellID == spellIDToFind then
+              cache = true -- 找到目标天赋，缓存为 true
+              return true
+            end
+          end
+        end
+      end
+    end
+
+    -- 未找到目标天赋，缓存为 false
+    cache = false
+    return false
+  end
 end
