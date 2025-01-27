@@ -316,3 +316,23 @@ function ZhuZhuTalantActive(spellId)
     return false
   end
 end
+
+function ZhuZhuChangeFriendTemplate()
+  local frame = CreateFrame("Frame")
+  frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+  frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+  if not frame:GetScript("OnEvent") then
+    frame:SetScript("OnEvent", function(self, event)
+      local inInstance, instanceType = IsInInstance()
+      if inInstance then
+        print("玩家已进入副本，类型为：" .. instanceType)
+        SetCVar("nameplateShowFriends", 1)
+        -- 在此处添加进入副本时的操作
+      else
+        print("玩家已离开副本")
+        SetCVar("nameplateShowFriends", 0)
+        -- 在此处添加离开副本时的操作
+      end
+    end)
+  end
+end
